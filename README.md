@@ -1,0 +1,2 @@
+# HitandBlow
+Python標準ライブラリのみを用いたゲームの制作
