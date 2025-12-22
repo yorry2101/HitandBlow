@@ -9,8 +9,9 @@ Python標準ライブラリのみを用いたゲームの制作
 5. 親は子の予想オブジェクトが当たっているかを「X Hit Y Blow」(X, Yは0<=X, Y<=4)で判定する
 6. 子の勝敗は3回中2回当てれた方の勝ちとする．
 
-クラス名	主な責務
-Player	親・子・CPUの共通表現
-ParentJudge	Hit & Blow 判定
-GameRound	1回分の勝負管理
-GameManager	全体進行
+| クラス名 | 主な責務 |
+| :------: | :------: |
+| Player | 親・子・CPUの共通表現 |
+| ParentJudge | Hit & Blow 判定 |
+| GameRound | 1回分の勝負管理 |
+| GameManager | 全体進行 |
