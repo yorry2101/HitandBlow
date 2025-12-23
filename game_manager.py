@@ -11,4 +11,12 @@ class GameManager:
         self.round.add_attempt(guess, hit, blow)
         return hit, blow
     
+    # 親に正解の値(4桁)を与えるメソッド
+    # randomな値を生成する．
+    @staticmethod
+    def generate_answer() -> str:
+        import random
+        digits = list(range(10))
+        random.shuffle(digits)
+        return ''.join(str(digits[i]) for i in range(4))  # 4桁の数字を返す
     
