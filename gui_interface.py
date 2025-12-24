@@ -6,8 +6,10 @@ from game_manager import GameManager
 
 class HitAndBlowGUI:
     def __init__(self, master):
-        self.master = master
         master.title("Hit & Blow")
+        master.geometry("360x420")
+        master.configure(bg="#222222")
+
 
         # 正解をランダム生成（重複なし・4桁）
         self.answer = self.generate_answer()
@@ -15,26 +17,43 @@ class HitAndBlowGUI:
 
         # タイトル
         self.label_title = tk.Label(
-            master, text="Hit & Blow ゲーム", font=("Arial", 16)
+            text="Hit & Blow",
+            font=("Arial", 22, "bold"),
+            fg="#FFD700",
+            bg="#222222"
         )
         self.label_title.pack(pady=10)
 
         # 説明
         self.label_info = tk.Label(
-            master, text="4桁の異なる数字を入力してください"
+            text="4桁の数字を入力してください",
+            font=("Arial", 11),
+            fg="white",
+            bg="#222222"
         )
-        self.label_info.pack()
+        self.label_info.pack(pady=5)
 
         # 入力欄
-        self.entry_guess = tk.Entry(master, width=10, font=("Arial", 14))
-        self.entry_guess.pack(pady=5)
+        self.entry_guess = tk.Entry(
+            width=12,
+            font=("Arial", 16),
+            justify="center"
+        )
+        self.entry_guess.pack(pady=8)
 
         # 判定ボタン
         self.button_guess = tk.Button(
-            master, text="判定", command=self.make_guess
+            text="判定！",
+            font=("Arial", 14, "bold"),
+            bg="#FF6347",
+            fg="white",
+            activebackground="#FF4500",
+            relief="raised",
+            bd=4,
+            command=self.make_guess
         )
-        self.button_guess.pack(pady=5)
-
+        self.button_guess.pack(pady=10)
+        
         # 結果表示
         self.label_result = tk.Label(master, text="", font=("Arial", 12))
         self.label_result.pack(pady=5)
