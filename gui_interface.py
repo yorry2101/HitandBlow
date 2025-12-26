@@ -37,8 +37,22 @@ class StartScreen(tk.Frame):
             font=("Arial", 30, "bold"),
             bg="#FFD700",
             fg="black",
+            height=1,
+            width=10,
             command=start_callback
         ).pack()
+
+        # quit button
+        tk.Button(
+            self,
+            text="QUIT",
+            font=("Arial", 30, "bold"),
+            bg="gray",
+            fg="white",
+            height=1,
+            width=10,
+            command=master.quit
+        ).pack(pady=20)
 
 class HitAndBlowGUI(tk.Frame):
     def __init__(self, master, back_callback):
