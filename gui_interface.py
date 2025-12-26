@@ -6,9 +6,15 @@ from game_manager import GameManager
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.geometry("1280x720")
+        self.root.geometry(self.get_computer_screen_size())
 
         self.start_screen = StartScreen(root, self.start_game)
+
+    def get_computer_screen_size(self):
+        width = self.root.winfo_screenwidth()
+        height = self.root.winfo_screenheight()
+        print(f"Screen size: {width}x{height}") # Debug print, 後で消す
+        return f"{width}x{height}"
 
     def start_game(self):
         self.start_screen.destroy()
@@ -62,9 +68,8 @@ class HitAndBlowGUI(tk.Frame):
         self.back_callback = back_callback
         self.master = master
         self.master.title("Hit & Blow")
-        self.master.geometry("1080x640")
+        self.master.geometry(self.master.winfo_geometry())
         self.master.configure(bg="#A0522D")
-
 
         # 正解をランダム生成（重複なし・4桁）
         self.answer = self.generate_answer()
