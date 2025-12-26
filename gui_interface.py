@@ -163,7 +163,9 @@ class HitAndBlowGUI(tk.Frame):
             )
             return
 
-        hit, blow = self.game_manager.make_guess(guess)
+        self.game_manager.make_guess(guess)
+        hit = self.game_manager.get_last_hit()
+        blow = self.game_manager.get_last_blow()
 
         result_text = f"{guess} → {hit} Hit, {blow} Blow"
         self.label_result.config(text=result_text)
