@@ -6,6 +6,7 @@ from game_manager import GameManager
 class App:
     def __init__(self, root):
         self.root = root
+        self.root.title("Hit & Blow Game")
         self.root.geometry(self.get_computer_screen_size())
 
         self.start_screen = StartScreen(root, self.start_game)
