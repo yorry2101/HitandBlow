@@ -120,6 +120,21 @@ class HitAndBlowGUI(tk.Frame):
         self.label_result = tk.Label(self, font=("Arial", 12))
         self.label_result.pack(pady=5)
 
+        ## hit と blow を分けて表示
+        self.label_hit = tk.Label(self,
+            font=("Arial", 20),
+            fg="blue",
+            bg="beige"
+        )
+        self.label_hit.place(x=100, y=400)
+
+        self.label_blow = tk.Label(self,
+            font=("Arial", 20),
+            fg="green",
+            bg="beige"
+        )
+        self.label_blow.place(x=300, y=400)
+
         # 履歴表示
         self.text_history = tk.Text(self, height=10, width=30, state="disabled")
         self.text_history.pack(pady=10)
@@ -167,6 +182,8 @@ class HitAndBlowGUI(tk.Frame):
         hit = self.game_manager.get_last_hit()
         blow = self.game_manager.get_last_blow()
 
+        self.label_hit.config(text=f"Hit: {hit}")
+        self.label_blow.config(text=f"Blow: {blow}")
         result_text = f"{guess} → {hit} Hit, {blow} Blow"
         self.label_result.config(text=result_text)
 
