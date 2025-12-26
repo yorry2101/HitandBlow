@@ -3,12 +3,53 @@ from tkinter import messagebox
 import random
 from game_manager import GameManager
 
+class App:
+    def __init__(self, root):
+        self.root = root
+        self.root.geometry("1280x720")
 
-class HitAndBlowGUI:
-    def __init__(self, master):
-        master.title("Hit & Blow")
-        master.geometry("360x420")
-        master.configure(bg="#222222")
+        self.start_screen = StartScreen(root, self.start_game)
+
+    def start_game(self):
+        self.start_screen.destroy()
+        self.game_screen = HitAndBlowGUI(self.root, self.back_to_start)
+
+    def back_to_start(self):
+        self.game_screen.destroy()
+        self.start_screen = StartScreen(self.root, self.start_game)
+
+class StartScreen(tk.Frame):
+    def __init__(self, master, start_callback):
+        super().__init__(master, bg="#A0522D")
+        self.pack(fill="both", expand=True)
+
+        tk.Label(
+            self,
+            text="Hit & Blow",
+            font=("Arial", 60, "bold"),
+            fg="gold",
+            bg="#A0522D"
+        ).pack(pady=150)
+
+        tk.Button(
+            self,
+            text="START",
+            font=("Arial", 30, "bold"),
+            bg="#FFD700",
+            fg="black",
+            command=start_callback
+        ).pack()
+
+class HitAndBlowGUI(tk.Frame):
+    def __init__(self, master, back_callback):
+        super().__init__(master, bg="#A0522D")
+        self.pack(fill="both", expand=True)
+
+        self.back_callback = back_callback
+        self.master = master
+        self.master.title("Hit & Blow")
+        self.master.geometry("1080x640")
+        self.master.configure(bg="#A0522D")
 
 
         # 正解をランダム生成（重複なし・4桁）
@@ -16,33 +57,34 @@ class HitAndBlowGUI:
         self.game_manager = GameManager(self.answer)
 
         # タイトル
-        self.label_title = tk.Label(
-            text="Hit & Blow",
-            font=("Arial", 22, "bold"),
-            fg="#FFD700",
-            bg="#222222"
+        self.label_title = tk.Label(self,
+            text="Hit & Blow !!",
+            font=("Arial", 108, "bold"),
+            fg="red",
+            bg="beige"
         )
-        self.label_title.pack(pady=10)
+        self.label_title.pack(pady=50)
+        
 
         # 説明
-        self.label_info = tk.Label(
-            text="4桁の数字を入力してください",
-            font=("Arial", 11),
-            fg="white",
-            bg="#222222"
+        self.label_info = tk.Label(self,
+            text="Please enter your thinking 4 Number",
+            font=("Arial", 30),
+            fg="beige",
+            bg="#A0522D"
         )
         self.label_info.pack(pady=5)
 
         # 入力欄
-        self.entry_guess = tk.Entry(
-            width=12,
+        self.entry_guess = tk.Entry(self,
+            width=30,
             font=("Arial", 16),
             justify="center"
         )
         self.entry_guess.pack(pady=8)
 
         # 判定ボタン
-        self.button_guess = tk.Button(
+        self.button_guess = tk.Button(self,
             text="判定！",
             font=("Arial", 14, "bold"),
             bg="#FF6347",
@@ -55,12 +97,27 @@ class HitAndBlowGUI:
         self.button_guess.pack(pady=10)
         
         # 結果表示
-        self.label_result = tk.Label(master, text="", font=("Arial", 12))
+        self.label_result = tk.Label(self, font=("Arial", 12))
         self.label_result.pack(pady=5)
 
         # 履歴表示
-        self.text_history = tk.Text(master, height=10, width=30, state="disabled")
+        self.text_history = tk.Text(self, height=10, width=30, state="disabled")
         self.text_history.pack(pady=10)
+
+        self.button_quit = tk.Button(
+            self,
+            text="Quit",
+            font=("Arial", 16, "bold"),
+            bg="gray",
+            fg="white",
+            command=self.quit_game
+        )
+
+        self.button_quit.place(
+            relx=0.98,   # 右端
+            rely=0.95,   # 下端
+            anchor="se"  # ボタンの右下を基準に配置
+        )
 
     def generate_answer(self) -> str:
         digits = []
@@ -103,8 +160,12 @@ class HitAndBlowGUI:
             messagebox.showinfo("クリア", "おめでとうございます！正解です！")
             self.master.quit()
 
+    def quit_game(self):
+        if messagebox.askyesno("Confirmation", "Are you back to Start Screen?"):
+            self.back_callback()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = HitAndBlowGUI(root)
+    App(root)
     root.mainloop()
