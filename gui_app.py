@@ -1,6 +1,5 @@
-from gui_interface import HitAndBlowGUI
+from gui_interface import App
 import tkinter as tk
-import app
 
 if __name__ == "__main__":
     root = tk.Tk()
