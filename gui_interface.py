@@ -82,13 +82,12 @@ class HitAndBlowGUI(tk.Frame):
         self.cvs.pack()
 
         # カード8枚表示
-        """
         self.cards = []
         for i in range(8):
-            card = CardSprite(self.cvs, 100 + i * 90, 250, f"Card {i+1}")
+            card = CardSprite(self.cvs, 100 + i * 90, 300, str(i+1))
             self.cards.append(card)
-        """
-
+            card.update(self.cvs)
+            
         # タイトル
         """
         self.label_title = tk.Label(self,
