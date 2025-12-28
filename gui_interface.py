@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 from game_manager import GameManager
+from sprite import CardSprite
 
 class App:
     def __init__(self, root):
@@ -76,7 +77,20 @@ class HitAndBlowGUI(tk.Frame):
         self.answer = self.generate_answer()
         self.game_manager = GameManager(self.answer)
 
+        # キャンバス
+        self.cvs = tk.Canvas(self, width=800, height=600, bg="#007400")
+        self.cvs.pack()
+
+        # カード8枚表示
+        """
+        self.cards = []
+        for i in range(8):
+            card = CardSprite(self.cvs, 100 + i * 90, 250, f"Card {i+1}")
+            self.cards.append(card)
+        """
+
         # タイトル
+        """
         self.label_title = tk.Label(self,
             text="Hit & Blow !!",
             font=("Arial", 108, "bold"),
@@ -84,7 +98,22 @@ class HitAndBlowGUI(tk.Frame):
             bg="beige"
         )
         self.label_title.pack(pady=50)
-        
+        """
+
+        ## hit と blow を分けて表示
+        self.label_hit = tk.Label(self,
+            font=("Arial", 20),
+            fg="blue",
+            bg="beige"
+        )
+        self.label_hit.pack(pady=50)
+
+        self.label_blow = tk.Label(self,
+            font=("Arial", 20),
+            fg="green",
+            bg="beige"
+        )
+        self.label_blow.pack(pady=50)
 
         # 説明
         self.label_info = tk.Label(self,
@@ -120,24 +149,9 @@ class HitAndBlowGUI(tk.Frame):
         self.label_result = tk.Label(self, font=("Arial", 12))
         self.label_result.pack(pady=5)
 
-        ## hit と blow を分けて表示
-        self.label_hit = tk.Label(self,
-            font=("Arial", 20),
-            fg="blue",
-            bg="beige"
-        )
-        self.label_hit.place(x=100, y=400)
-
-        self.label_blow = tk.Label(self,
-            font=("Arial", 20),
-            fg="green",
-            bg="beige"
-        )
-        self.label_blow.place(x=300, y=400)
-
         # 履歴表示
-        self.text_history = tk.Text(self, height=10, width=30, state="disabled")
-        self.text_history.pack(pady=10)
+        #self.text_history = tk.Text(self, height=10, width=30, state="disabled")
+        #self.text_history.pack(pady=10)
 
         self.button_quit = tk.Button(
             self,
