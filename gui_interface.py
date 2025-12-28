@@ -78,7 +78,7 @@ class HitAndBlowGUI(tk.Frame):
         self.game_manager = GameManager(self.answer)
 
         # キャンバス
-        self.cvs = tk.Canvas(self, width=800, height=600, bg="#007400")
+        self.cvs = tk.Canvas(self, width=1000, height=800, bg="#007400")
         self.cvs.pack()
 
         # 手札となるカードをランダムにn枚決定
@@ -89,8 +89,8 @@ class HitAndBlowGUI(tk.Frame):
         # 2段表示
         self.cards = []
         for i in range(8):
-            x = 180 + (i % 4) * 150
-            y = 150 + (i // 4) * 200
+            x = 280 + (i % 4) * 150
+            y = 400 + (i // 4) * 200
             charatext = card_numbers[i]
             card = CardSprite(self.cvs, x, y, charatext)
             self.cards.append(card)
@@ -180,13 +180,19 @@ class HitAndBlowGUI(tk.Frame):
     def on_mouse_clicked(self, event):
         x_click = event.x
         y_click = event.y
+        print(f"Mouse clicked at: ({x_click}, {y_click})")  # デバッグ用出力
 
         for card in self.cards:
             card_x, card_y = card.get_position()
+            print(f"Card position: ({card_x}, {card_y})")  # デバッグ用出力
             if (card_x - 45 <= x_click <= card_x + 45 and
                 card_y - 70 <= y_click <= card_y + 70):
                 # カードがクリックされた場合の処理
                 print(f"Card {card.get_charatext()} clicked") # デバッグ用出力
+                if card.is_selected():
+                    card.deselected(self.cvs)
+                else:
+                    card.selected(self.cvs)
 
     def generate_answer(self) -> str:
         digits = []

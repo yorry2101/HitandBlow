@@ -27,19 +27,33 @@ class CardSprite:
     
     def set_y(self, y):
         self.y = y
-    
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
-    
+
+    def move(self, x, y):
+        self.x = x
+        self.y = y
+
     def get_position(self):
         return (self.x, self.y)
     
     def get_charatext(self):
         return self.charatext
     
-    def set_selected(self, select):
-        self.select = select
+    def invisible(self, cvs):
+        # カードを非表示にする
+        cvs.create_rectangle(self.x - 61, self.y - 92, self.x + 60, self.y + 92,
+                             fill="#007400", outline="#007400")
+    
+    def selected(self, cvs):
+        self.select = True
+        # 選択状態の表示（例: 所定の位置に移動する）
+        self.invisible(cvs)
+        cvs.create_image(self.x, self.y - 240, image=self.image_card)
+    
+    def deselected(self, cvs):
+        self.select = False
+        # 非選択状態の表示（例: 元の位置に戻す）
+        self.invisible(cvs)
+        cvs.create_image(self.x, self.y + 240, image=self.image_card)
     
     def is_selected(self):
         return self.select
