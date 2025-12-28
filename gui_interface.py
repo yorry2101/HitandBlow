@@ -82,11 +82,17 @@ class HitAndBlowGUI(tk.Frame):
         self.cvs.pack()
 
         # カード8枚表示
+        # 2段表示
         self.cards = []
         for i in range(8):
-            card = CardSprite(self.cvs, 100 + i * 90, 300, str(i+1))
+            x = 180 + (i % 4) * 150
+            y = 150 + (i // 4) * 200
+            charatext = str(i + 1)  # カードの文字内容を1から8に設定
+            card = CardSprite(self.cvs, x, y, charatext)
             self.cards.append(card)
-            card.update(self.cvs)
+        
+        # クリックイベントのバインド
+        self.cvs.bind("<Button-1>", self.on_mouse_clicked)
             
         # タイトル
         """
@@ -166,6 +172,17 @@ class HitAndBlowGUI(tk.Frame):
             rely=0.95,   # 下端
             anchor="se"  # ボタンの右下を基準に配置
         )
+    
+    def on_mouse_clicked(self, event):
+        x_click = event.x
+        y_click = event.y
+
+        for card in self.cards:
+            card_x, card_y = card.get_position()
+            if (card_x - 45 <= x_click <= card_x + 45 and
+                card_y - 70 <= y_click <= card_y + 70):
+                # カードがクリックされた場合の処理
+                print(f"Card {card.get_charatext()} clicked") # デバッグ用出力
 
     def generate_answer(self) -> str:
         digits = []
