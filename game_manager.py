@@ -1,10 +1,17 @@
 # Hit & Blowの全体進行
+import random
 from parent_judge import ParentJudge
 from game_round import GameRound
 class GameManager:
     def __init__(self, answer: str):
         self.round = GameRound(answer)
-    
+        
+        # 0~9と十二支のカードを準備
+        self.cards_digits = [str(i) for i in range(10)]
+        self.cards_zodiac = ["mouse", "cow", "tiger", "rabbit", "dragon", "snake",
+                             "horse", "ram", "monkey", "rooster", "dog", "boar"]
+        self.cards = self.cards_digits + self.cards_zodiac
+
     # 予想を処理するメソッド
     def make_guess(self, guess: str):# -> tuple[int, int]:
         hit, blow = ParentJudge.judge(self.round.answer, guess)
@@ -22,5 +29,9 @@ class GameManager:
         if self.round.attempts:
             return self.round.attempts[-1]['blow']
         return 0
+    
+    # 手札となるカードをランダムにn枚決定するメソッド
+    def deal_cards(self, n: int) -> list[str]:
+        return random.sample(self.cards, n)
     
     

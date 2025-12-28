@@ -81,13 +81,17 @@ class HitAndBlowGUI(tk.Frame):
         self.cvs = tk.Canvas(self, width=800, height=600, bg="#007400")
         self.cvs.pack()
 
+        # 手札となるカードをランダムにn枚決定
+        card_numbers = self.game_manager.deal_cards(8)
+        print("Card numbers:", card_numbers)  # Debug print
+
         # カード8枚表示
         # 2段表示
         self.cards = []
         for i in range(8):
             x = 180 + (i % 4) * 150
             y = 150 + (i // 4) * 200
-            charatext = str(i + 1)  # カードの文字内容を1から8に設定
+            charatext = card_numbers[i]
             card = CardSprite(self.cvs, x, y, charatext)
             self.cards.append(card)
         
