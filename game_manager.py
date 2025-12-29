@@ -34,4 +34,7 @@ class GameManager:
     def deal_cards(self, n: int) -> list[str]:
         return random.sample(self.cards, n)
     
+    # 正解カードを手札中からランダムに選択するメソッド
+    def select_correct_cards(self, cards: list[str], n: int) -> list[str]:
+        return random.sample(cards, n)
     

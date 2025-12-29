@@ -73,6 +73,9 @@ class HitAndBlowGUI(tk.Frame):
         self.master.geometry(self.master.winfo_geometry())
         self.master.configure(bg="#A0522D")
 
+        self.number_of_cards = 8 # 手札の枚数
+        self.number_of_correct = 4 # 正解の枚数
+
         # 正解をランダム生成（重複なし・4桁）
         self.answer = self.generate_answer()
         self.game_manager = GameManager(self.answer)
@@ -81,31 +84,36 @@ class HitAndBlowGUI(tk.Frame):
         self.cvs = tk.Canvas(self, width=1000, height=800, bg="#007400")
         self.cvs.pack()
 
+        # 手札となるカードをランダムにn枚決定
+        card_numbers = self.game_manager.deal_cards(self.number_of_cards)
+        print("Card numbers:", card_numbers)  # Debug print
+        
+        # 選択されたカードのリスト
+        self.select_cards = []
+
         # 選択中のカードが置かれるスペース
-        # 4枚分のカードフレームを表示
+        # number_of_correct枚分のカードフレームを表示
         self.card_frames = []
-        for i in range(4):
+        for i in range(self.number_of_correct):
             x = 280 + i * 150
             y = 160
             card_frame = CardFrameSprite(self.cvs, x, y)
             self.card_frames.append(card_frame)
 
-        # 手札となるカードをランダムにn枚決定
-        card_numbers = self.game_manager.deal_cards(8)
-        print("Card numbers:", card_numbers)  # Debug print
-
         # カード8枚表示
         # 2段表示
         self.cards = []
-        for i in range(8):
-            x = 280 + (i % 4) * 150
-            y = 400 + (i // 4) * 200
+        for i in range(self.number_of_cards):
+            half = self.number_of_cards // 2
+            x = 280 + (i % half) * 150
+            y = 400 + (i // half) * 200
             charatext = card_numbers[i]
             card = CardSprite(self.cvs, x, y, charatext)
             self.cards.append(card)
         
-        # 選択されたカードのリスト
-        self.select_cards = []
+        # 正解カードを手札中からランダムに選択
+        self.correct_cards = random.sample(self.cards, self.number_of_correct)
+        print("Correct cards:", [card.get_charatext() for card in self.correct_cards])  # Debug print
         
         # クリックイベントのバインド
         self.cvs.bind("<Button-1>", self.on_mouse_clicked)
@@ -155,7 +163,7 @@ class HitAndBlowGUI(tk.Frame):
 
         # 判定ボタン
         self.button_guess = tk.Button(self,
-            text="判定！",
+            text="JUDGE!",
             font=("Arial", 14, "bold"),
             bg="#FF6347",
             fg="white",
@@ -203,11 +211,13 @@ class HitAndBlowGUI(tk.Frame):
                 print(f"Card {card.get_charatext()} clicked") # デバッグ用出力
                 if card.is_selected():
                     self.select_cards.remove(card)
-                    card.deselected(self.cvs)
+                    card.deselected()
                 else:
+                    if len(self.select_cards) >= 4:
+                        return  # 4枚まで
                     self.select_cards.append(card)
                     index = len(self.select_cards) - 1
-                    card.selected(self.cvs, index)
+                    card.selected(index)
 
     def generate_answer(self) -> str:
         digits = []
@@ -225,7 +235,11 @@ class HitAndBlowGUI(tk.Frame):
         )
 
     def make_guess(self):
-        guess = self.entry_guess.get()
+        if len(self.select_cards) != 4:
+            messagebox.showerror("選択エラー", "4枚のカードを選択してください")
+            return
+
+        guess = "".join(card.get_charatext() for card in self.select_cards)
 
         if not self.validate_guess(guess):
             messagebox.showerror(

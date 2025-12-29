@@ -6,6 +6,7 @@ import tkinter as tk
 class CardSprite:
 
     def __init__(self, cvs, x, y, charatext):
+        self.cvs = cvs # Canvas
         self.x = x # x座標
         self.y = y # y座標
         self.original_x = x # 元のx座標
@@ -20,11 +21,11 @@ class CardSprite:
         # カードを描画
         self.id = cvs.create_image(self.x, self.y, image=self.image_card)
 
-    def update(self, cvs):
+    def update(self):
         print(f"Updating card {self.charatext} to position ({self.x}, {self.y})")  # デバッグ用出力
         # 座標の更新
-        cvs.coords(self.id, self.x, self.y)
-        cvs.update()
+        self.cvs.coords(self.id, self.x, self.y)
+        self.cvs.update()
     
     def set_x(self, x):
         self.x = x
@@ -46,19 +47,19 @@ class CardSprite:
         # カードを非表示にする
         cvs.itemconfig(self.id, state='hidden')
     
-    def selected(self, cvs, index):
+    def selected(self, index):
         print(f"Selecting card {self.charatext} at index {index}")  # デバッグ用出力
         self.select = True
         # 選択状態の表示（選択順にx座標を変更）
         self.move(280 + index * 150, 160)
-        self.update(cvs)
+        self.update()
     
-    def deselected(self, cvs):
+    def deselected(self):
         print(f"Deselecting card {self.charatext}")  # デバッグ用出力
         self.select = False
         # 非選択状態の表示（元の位置に戻す）
         self.move(self.original_x, self.original_y)
-        self.update(cvs)
+        self.update()
     
     def is_selected(self):
         return self.select
@@ -67,6 +68,7 @@ class CardSprite:
 class CardFrameSprite:
 
     def __init__(self, cvs, x, y):
+        self.cvs = cvs
         self.x = x
         self.y = y
 
@@ -77,7 +79,7 @@ class CardFrameSprite:
         # カードを描画
         self.id = cvs.create_image(self.x, self.y, image=self.image_card)
 
-    def update(self, cvs):
+    def update(self):
         # 座標の更新
-        cvs.coords(self.id, self.x, self.y)
-        cvs.update()
+        self.cvs.coords(self.id, self.x, self.y)
+        self.cvs.update()
