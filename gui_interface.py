@@ -88,8 +88,8 @@ class HitAndBlowGUI(tk.Frame):
         card_numbers = self.game_manager.deal_cards(self.number_of_cards)
         print("Card numbers:", card_numbers)  # Debug print
         
-        # 選択されたカードのリスト
-        self.select_cards = []
+        # 選択されたカードのリスト (固定サイズ)
+        self.select_cards = [None] * 4
 
         # 選択中のカードが置かれるスペース
         # number_of_correct枚分のカードフレームを表示
@@ -210,14 +210,19 @@ class HitAndBlowGUI(tk.Frame):
                 # カードがクリックされた場合の処理
                 print(f"Card {card.get_charatext()} clicked") # デバッグ用出力
                 if card.is_selected():
-                    self.select_cards.remove(card)
-                    card.deselected()
+                    # 非選択: スロットをNoneにする
+                    for i in range(4):
+                        if self.select_cards[i] == card:
+                            self.select_cards[i] = None
+                            card.deselected()
+                            break
                 else:
-                    if len(self.select_cards) >= 4:
-                        return  # 4枚まで
-                    self.select_cards.append(card)
-                    index = len(self.select_cards) - 1
-                    card.selected(index)
+                    # 選択: 空いているスロットを探す
+                    for i in range(4):
+                        if self.select_cards[i] is None:
+                            self.select_cards[i] = card
+                            card.selected(i)
+                            break
 
     def generate_answer(self) -> str:
         digits = []
@@ -235,11 +240,12 @@ class HitAndBlowGUI(tk.Frame):
         )
 
     def make_guess(self):
-        if len(self.select_cards) != 4:
+        selected_count = sum(1 for c in self.select_cards if c is not None)
+        if selected_count != 4:
             messagebox.showerror("選択エラー", "4枚のカードを選択してください")
             return
 
-        guess = "".join(card.get_charatext() for card in self.select_cards)
+        guess = "".join(card.get_charatext() for card in self.select_cards if card is not None)
 
         if not self.validate_guess(guess):
             messagebox.showerror(
