@@ -8,6 +8,8 @@ class CardSprite:
     def __init__(self, cvs, x, y, charatext):
         self.x = x # x座標
         self.y = y # y座標
+        self.original_x = x # 元のx座標
+        self.original_y = y # 元のy座標
         self.charatext = charatext # カードの文字内容
         self.select = False # 選択状態
 
@@ -44,18 +46,18 @@ class CardSprite:
         # カードを非表示にする
         cvs.itemconfig(self.id, state='hidden')
     
-    def selected(self, cvs):
-        print(f"Selecting card {self.charatext}")  # デバッグ用出力
+    def selected(self, cvs, index):
+        print(f"Selecting card {self.charatext} at index {index}")  # デバッグ用出力
         self.select = True
-        # 選択状態の表示（例: 所定の位置に移動する）
-        self.move(self.x, self.y - 240)
+        # 選択状態の表示（選択順にx座標を変更）
+        self.move(280 + index * 150, 160)
         self.update(cvs)
     
     def deselected(self, cvs):
         print(f"Deselecting card {self.charatext}")  # デバッグ用出力
         self.select = False
-        # 非選択状態の表示（例: 元の位置に戻す）
-        self.move(self.x, self.y + 240)
+        # 非選択状態の表示（元の位置に戻す）
+        self.move(self.original_x, self.original_y)
         self.update(cvs)
     
     def is_selected(self):

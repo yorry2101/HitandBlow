@@ -104,6 +104,9 @@ class HitAndBlowGUI(tk.Frame):
             card = CardSprite(self.cvs, x, y, charatext)
             self.cards.append(card)
         
+        # 選択されたカードのリスト
+        self.select_cards = []
+        
         # クリックイベントのバインド
         self.cvs.bind("<Button-1>", self.on_mouse_clicked)
             
@@ -199,9 +202,12 @@ class HitAndBlowGUI(tk.Frame):
                 # カードがクリックされた場合の処理
                 print(f"Card {card.get_charatext()} clicked") # デバッグ用出力
                 if card.is_selected():
+                    self.select_cards.remove(card)
                     card.deselected(self.cvs)
                 else:
-                    card.selected(self.cvs)
+                    self.select_cards.append(card)
+                    index = len(self.select_cards) - 1
+                    card.selected(self.cvs, index)
 
     def generate_answer(self) -> str:
         digits = []
