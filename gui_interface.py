@@ -153,14 +153,6 @@ class HitAndBlowGUI(tk.Frame):
         )
         self.label_info.pack(pady=5)
 
-        # 入力欄
-        self.entry_guess = tk.Entry(self,
-            width=30,
-            font=("Arial", 16),
-            justify="center"
-        )
-        self.entry_guess.pack(pady=8)
-
         # 判定ボタン
         self.button_guess = tk.Button(self,
             text="JUDGE!",
@@ -175,8 +167,8 @@ class HitAndBlowGUI(tk.Frame):
         self.button_guess.pack(pady=10)
         
         # 結果表示
-        self.label_result = tk.Label(self, font=("Arial", 12))
-        self.label_result.pack(pady=5)
+        #self.label_result = tk.Label(self, font=("Arial", 12))
+        #self.label_result.pack(pady=5)
 
         # 履歴表示
         #self.text_history = tk.Text(self, height=10, width=30, state="disabled")
@@ -240,35 +232,19 @@ class HitAndBlowGUI(tk.Frame):
         )
 
     def make_guess(self):
+        print("Making guess...")  # デバッグ用出力
         selected_count = sum(1 for c in self.select_cards if c is not None)
+        print(f"Selected cards count: {selected_count}")  # デバッグ用出力
         if selected_count != 4:
             messagebox.showerror("選択エラー", "4枚のカードを選択してください")
             return
 
-        guess = "".join(card.get_charatext() for card in self.select_cards if card is not None)
-
-        if not self.validate_guess(guess):
-            messagebox.showerror(
-                "入力エラー", "4桁の異なる数字を入力してください"
-            )
-            return
-
-        self.game_manager.make_guess(guess)
+        self.game_manager.make_guess(self.select_cards, self.correct_cards)
         hit = self.game_manager.get_last_hit()
         blow = self.game_manager.get_last_blow()
 
         self.label_hit.config(text=f"Hit: {hit}")
         self.label_blow.config(text=f"Blow: {blow}")
-        result_text = f"{guess} → {hit} Hit, {blow} Blow"
-        self.label_result.config(text=result_text)
-
-        # 履歴に追加
-        self.text_history.config(state="normal")
-        self.text_history.insert(tk.END, result_text + "\n")
-        self.text_history.config(state="disabled")
-
-        # 入力欄クリア
-        self.entry_guess.delete(0, tk.END)
 
         if hit == 4:
             messagebox.showinfo("クリア", "おめでとうございます！正解です！")

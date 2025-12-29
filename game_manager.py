@@ -13,8 +13,9 @@ class GameManager:
         self.cards = self.cards_digits + self.cards_zodiac
 
     # 予想を処理するメソッド
-    def make_guess(self, guess: str):# -> tuple[int, int]:
-        hit, blow = ParentJudge.judge(self.round.answer, guess)
+    def make_guess(self, guess: list[str], correct_cards: list[str]):# -> tuple[int, int]:
+        #hit, blow = ParentJudge.judge(self.round.answer, guess)
+        hit, blow = ParentJudge.judge_cards(correct_cards, list(guess))
         self.round.add_attempt(guess, hit, blow)
         #return hit, blow
     
