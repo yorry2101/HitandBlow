@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 from game_manager import GameManager
-from sprite import CardSprite
+from sprite import CardSprite, CardFrameSprite
 
 class App:
     def __init__(self, root):
@@ -80,6 +80,15 @@ class HitAndBlowGUI(tk.Frame):
         # キャンバス
         self.cvs = tk.Canvas(self, width=1000, height=800, bg="#007400")
         self.cvs.pack()
+
+        # 選択中のカードが置かれるスペース
+        # 4枚分のカードフレームを表示
+        self.card_frames = []
+        for i in range(4):
+            x = 280 + i * 150
+            y = 160
+            card_frame = CardFrameSprite(self.cvs, x, y)
+            self.card_frames.append(card_frame)
 
         # 手札となるカードをランダムにn枚決定
         card_numbers = self.game_manager.deal_cards(8)

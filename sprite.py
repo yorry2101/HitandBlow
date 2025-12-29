@@ -1,5 +1,5 @@
 # sprite.py
-# カードスプライトモジュール
+# スプライトモジュール
 import tkinter as tk
 
 # カードクラス
@@ -60,3 +60,22 @@ class CardSprite:
     
     def is_selected(self):
         return self.select
+
+# 選択中のカードが置かれるスペースの描画クラス
+class CardFrameSprite:
+
+    def __init__(self, cvs, x, y):
+        self.x = x
+        self.y = y
+
+        # 画像の読み込み
+        file_image = "images/cardframe.png"
+        self.image_card = tk.PhotoImage(file=file_image)
+
+        # カードを描画
+        self.id = cvs.create_image(self.x, self.y, image=self.image_card)
+
+    def update(self, cvs):
+        # 座標の更新
+        cvs.coords(self.id, self.x, self.y)
+        cvs.update()
