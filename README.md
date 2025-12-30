@@ -1,17 +1,28 @@
 # HitandBlow
 Python標準ライブラリのみを用いたゲームの制作
 
-## ルール
-1. 親:1人，子:2人(1人はCPU)を決める
-2. 親は```object```を4つ選ぶ
-3. 子同士で先行or後攻を決める
-4. 先行，後攻それぞれ数ある```object```の中から4つ選ぶ
-5. 親は子の予想オブジェクトが当たっているかを「X Hit Y Blow」(X, Yは0<=X, Y<=4)で判定する
-6. 子の勝敗は3回中2回当てれた方の勝ちとする．
+## 遊び方
+### 1.STARTをクリック
+<div align="center">
+ <img src="./rdm_images/hitandblow_scr_rdm_01.png" width="327"/>
+</div>
 
-| クラス名 | 主な責務 |
-| :------: | :------: |
-| Player | 親・子・CPUの共通表現 |
-| ParentJudge | Hit & Blow 判定 |
-| GameRound | 1回分の勝負管理 |
-| GameManager | 全体進行 |
+### 2.難易度を選択
+<div align="center">
+ <img src="./rdm_images/hitandblow_scr_rdm_02.png" width="327"/>
+</div>
+
+### 3.カードを選択してJUDGE!ボタンを押す
+<div align="center">
+ <img src="./rdm_images/hitandblow_scr_rdm_03.png" width="327"/>
+</div>
+
+### 4.すべてHIT!
+<div align="center">
+ <img src="./rdm_images/hitandblow_scr_rdm_04.png" width="327"/>
+</div>
+
+### 5.おめでとう!もう1回遊ぶ?
+<div align="center">
+ <img src="./rdm_images/hitandblow_scr_rdm_05.png" width="327"/>
+</div>
