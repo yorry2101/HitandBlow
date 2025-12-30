@@ -134,12 +134,16 @@ class HitAndBlowGUI(tk.Frame):
         self.cvs = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height, bg="#007400")
         self.cvs.pack()
 
+        self.y_content_top = 50
+        self.y_hit_blow_label = self.y_content_top
         self.select_area_start_x = (self.canvas_width - (self.number_of_correct * 150)) // 2 + 75
+        self.y_frame = self.y_content_top + 150
         self.cards_per_row = self.number_of_cards // 2
         self.start_x = (self.canvas_width - (self.cards_per_row * 150)) // 2 + 75
+        self.start_y = self.y_frame + 250
 
         # 中心線
-        self.cvs.create_line(self.canvas_width//2, 0, self.canvas_width//2, self.canvas_height, fill="white", dash=(4, 2))
+        #self.cvs.create_line(self.canvas_width//2, 0, self.canvas_width//2, self.canvas_height, fill="white", dash=(4, 2))
 
         # 手札となるカードをランダムにn枚決定
         card_numbers = self.game_manager.deal_cards(self.number_of_cards)
@@ -152,10 +156,9 @@ class HitAndBlowGUI(tk.Frame):
         # number_of_correct枚分のカードフレームを表示
         # 中心に合わせる
         self.card_frames = []
-        y_frame = 150
         for i in range(self.number_of_correct):
             x_frame = self.select_area_start_x + i * 150
-            frame = CardFrameSprite(self.cvs, x_frame, y_frame)
+            frame = CardFrameSprite(self.cvs, x_frame, self.y_frame)
             self.card_frames.append(frame)
 
         # カード 8or12or16枚表示, 2段表示
@@ -165,7 +168,7 @@ class HitAndBlowGUI(tk.Frame):
             row = i // self.cards_per_row
             col = i % self.cards_per_row
             x_card = self.start_x + col * 150
-            y_card = 400 + row * 200
+            y_card = self.start_y + row * 200
             card_sprite = CardSprite(self.cvs, x_card, y_card, card_number)
             self.cards.append(card_sprite)
         
@@ -175,36 +178,32 @@ class HitAndBlowGUI(tk.Frame):
         
         # クリックイベントのバインド
         self.cvs.bind("<Button-1>", self.on_mouse_clicked)
-            
-        # タイトル
-        """
-        self.label_title = tk.Label(self,
-            text="Hit & Blow !!",
-            font=("Arial", 108, "bold"),
-            fg="red",
-            bg="beige"
-        )
-        self.label_title.pack(pady=50)
-        """
 
-        ## hit と blow を分けて表示
-        self.label_hit = tk.Label(self,
+        # HitとBlowをCanvas内に表示
+        # 選択カードエリアの上に中央揃えで表示
+        x_offset = 100
+        x_hit = self.canvas_width // 2 - x_offset
+        x_blow = self.canvas_width // 2 + x_offset
+        self.hit_text_id = self.cvs.create_text(
+            x_hit,
+            self.y_hit_blow_label,
+            text="Hit: 0",
             font=("Arial", 20),
-            fg="blue",
-            bg="beige"
+            fill="white",
+            anchor="center"
         )
-        self.label_hit.pack(pady=50)
-
-        self.label_blow = tk.Label(self,
+        self.blow_text_id = self.cvs.create_text(
+            x_blow,
+            self.y_hit_blow_label,
+            text="Blow: 0",
             font=("Arial", 20),
-            fg="green",
-            bg="beige"
+            fill="white",
+            anchor="center"
         )
-        self.label_blow.pack(pady=50)
 
         # 説明
         self.label_info = tk.Label(self,
-            text="Please enter your thinking 4 Number",
+            text="Select cards and press JUDGE!",
             font=("Arial", 30),
             fg="beige",
             bg="#A0522D"
@@ -271,7 +270,7 @@ class HitAndBlowGUI(tk.Frame):
                     for i in range(self.number_of_correct):
                         if self.select_cards[i] is None:
                             self.select_cards[i] = card
-                            card.selected(i, self.select_area_start_x)
+                            card.selected(i, self.select_area_start_x, self.y_frame)
                             break
 
     def generate_answer(self) -> str:
@@ -301,8 +300,8 @@ class HitAndBlowGUI(tk.Frame):
         hit = self.game_manager.get_last_hit()
         blow = self.game_manager.get_last_blow()
 
-        self.label_hit.config(text=f"Hit: {hit}")
-        self.label_blow.config(text=f"Blow: {blow}")
+        self.cvs.itemconfig(self.hit_text_id, text=f"Hit: {hit}")
+        self.cvs.itemconfig(self.blow_text_id, text=f"Blow: {blow}")
 
         if hit == self.number_of_correct:
             messagebox.showinfo("クリア", "おめでとうございます！正解です！")

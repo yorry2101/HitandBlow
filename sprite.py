@@ -46,12 +46,12 @@ class CardSprite:
     def invisible(self, cvs):
         # カードを非表示にする
         cvs.itemconfig(self.id, state='hidden')
-    
-    def selected(self, index, start_x):
+
+    def selected(self, index, start_x, y_frame):
         print(f"Selecting card {self.charatext} at index {index}")  # デバッグ用出力
         self.select = True
         # 選択状態の表示（選択順にx座標を変更）
-        self.move(start_x + index * 150, 150)
+        self.move(start_x + index * 150, y_frame)
         self.update()
     
     def deselected(self):
