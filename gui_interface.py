@@ -10,7 +10,10 @@ class App:
         self.root.title("Hit & Blow Game")
         self.root.geometry(self.get_computer_screen_size())
 
-        self.start_screen = StartScreen(root, self.show_difficulty_selection)
+        self.start_screen = StartScreen(
+            root,
+            self.show_difficulty_selection
+        )
 
     def get_computer_screen_size(self):
         width = self.root.winfo_screenwidth()
@@ -20,15 +23,36 @@ class App:
 
     def show_difficulty_selection(self):
         self.start_screen.destroy()
-        self.difficulty_screen = DifficultyScreen(self.root, self.start_game)
+        self.difficulty_screen = DifficultyScreen(
+            self.root,
+            self.start_game,
+            self.back_to_start_from_difficulty
+        )
 
     def start_game(self, number_of_cards, number_of_correct):
         self.difficulty_screen.destroy()
-        self.game_screen = HitAndBlowGUI(self.root, self.back_to_start, number_of_cards, number_of_correct)
-
-    def back_to_start(self):
+        self.game_screen = HitAndBlowGUI(
+            self.root,
+            self.back_to_start_from_game,
+            number_of_cards,
+            number_of_correct
+        )
+    
+    # ゲーム画面からスタート画面に戻る
+    def back_to_start_from_game(self):
         self.game_screen.destroy()
-        self.start_screen = StartScreen(self.root, self.show_difficulty_selection)
+        self.start_screen = StartScreen(
+            self.root,
+            self.show_difficulty_selection
+        )
+    
+    # diff選択からスタート画面に戻る
+    def back_to_start_from_difficulty(self):
+        self.difficulty_screen.destroy()
+        self.start_screen = StartScreen(
+            self.root,
+            self.show_difficulty_selection
+        )
 
 class StartScreen(tk.Frame):
     def __init__(self, master, start_callback):
@@ -67,12 +91,13 @@ class StartScreen(tk.Frame):
         ).pack(pady=20)
 
 class DifficultyScreen(tk.Frame):
-    def __init__(self, master, start_callback):
+    def __init__(self, master, start_callback, back_callback):
         super().__init__(master, bg="#A0522D")
         self.pack(fill="both", expand=True)
         print("Difficulty screen shown")  # デバッグ用出力
 
         self.start_callback = start_callback
+        self.back_callback = back_callback
 
         tk.Label(
             self,
@@ -100,11 +125,28 @@ class DifficultyScreen(tk.Frame):
                 width=20,
                 command=lambda c=cards, cor=correct: self.select_difficulty(c, cor)
             ).pack(pady=20)
+        
+        self.button_return = tk.Button(
+            self,
+            text="Return",
+            font=("Arial", 16, "bold"),
+            bg="gray",
+            fg="white",
+            command=self.return_to_start_screen
+        )
+
+        self.button_return.place(
+            relx=0.98,   # 右端
+            rely=0.95,   # 下端
+            anchor="se"  # ボタンの右下を基準に配置
+        )
 
     def select_difficulty(self, number_of_cards, number_of_correct):
         print(f"Selected difficulty: {number_of_cards} cards, {number_of_correct} correct")  # デバッグ用出力
         self.start_callback(number_of_cards, number_of_correct)
-
+    
+    def return_to_start_screen(self):
+        self.back_callback()
 class HitAndBlowGUI(tk.Frame):
     def __init__(self, master, back_callback, number_of_cards, number_of_correct):
         super().__init__(master, bg="#A0522D")
@@ -131,7 +173,12 @@ class HitAndBlowGUI(tk.Frame):
         self.canvas_height = 800
 
         # キャンバス
-        self.cvs = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height, bg="#007400")
+        self.cvs = tk.Canvas(
+            self,
+            width=self.canvas_width,
+            height=self.canvas_height,
+            bg="#007400"
+        )
         self.cvs.pack()
 
         self.y_content_top = 50
@@ -141,9 +188,6 @@ class HitAndBlowGUI(tk.Frame):
         self.cards_per_row = self.number_of_cards // 2
         self.start_x = (self.canvas_width - (self.cards_per_row * 150)) // 2 + 75
         self.start_y = self.y_frame + 250
-
-        # 中心線
-        #self.cvs.create_line(self.canvas_width//2, 0, self.canvas_width//2, self.canvas_height, fill="white", dash=(4, 2))
 
         # 手札となるカードをランダムにn枚決定
         card_numbers = self.game_manager.deal_cards(self.number_of_cards)
@@ -222,14 +266,6 @@ class HitAndBlowGUI(tk.Frame):
             command=self.make_guess
         )
         self.button_guess.pack(pady=10)
-        
-        # 結果表示
-        #self.label_result = tk.Label(self, font=("Arial", 12))
-        #self.label_result.pack(pady=5)
-
-        # 履歴表示
-        #self.text_history = tk.Text(self, height=10, width=30, state="disabled")
-        #self.text_history.pack(pady=10)
 
         self.button_quit = tk.Button(
             self,
@@ -304,8 +340,10 @@ class HitAndBlowGUI(tk.Frame):
         self.cvs.itemconfig(self.blow_text_id, text=f"Blow: {blow}")
 
         if hit == self.number_of_correct:
-            messagebox.showinfo("クリア", "おめでとうございます！正解です！")
-            self.master.quit()
+            if messagebox.askyesno("Clear", "Congratulations! Do you want to play again?"):
+                self.back_callback()
+            else:
+                self.master.quit()
 
     def quit_game(self):
         if messagebox.askyesno("Confirmation", "Are you back to Start Screen?"):
