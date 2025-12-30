@@ -10,7 +10,7 @@ class App:
         self.root.title("Hit & Blow Game")
         self.root.geometry(self.get_computer_screen_size())
 
-        self.start_screen = StartScreen(root, self.start_game)
+        self.start_screen = StartScreen(root, self.show_difficulty_selection)
 
     def get_computer_screen_size(self):
         width = self.root.winfo_screenwidth()
@@ -18,13 +18,17 @@ class App:
         print(f"Screen size: {width}x{height}") # Debug print, 後で消す
         return f"{width}x{height}"
 
-    def start_game(self):
+    def show_difficulty_selection(self):
         self.start_screen.destroy()
-        self.game_screen = HitAndBlowGUI(self.root, self.back_to_start)
+        self.difficulty_screen = DifficultyScreen(self.root, self.start_game)
+
+    def start_game(self, number_of_cards, number_of_correct):
+        self.difficulty_screen.destroy()
+        self.game_screen = HitAndBlowGUI(self.root, self.back_to_start, number_of_cards, number_of_correct)
 
     def back_to_start(self):
         self.game_screen.destroy()
-        self.start_screen = StartScreen(self.root, self.start_game)
+        self.start_screen = StartScreen(self.root, self.show_difficulty_selection)
 
 class StartScreen(tk.Frame):
     def __init__(self, master, start_callback):
@@ -62,8 +66,47 @@ class StartScreen(tk.Frame):
             command=master.quit
         ).pack(pady=20)
 
+class DifficultyScreen(tk.Frame):
+    def __init__(self, master, start_callback):
+        super().__init__(master, bg="#A0522D")
+        self.pack(fill="both", expand=True)
+        print("Difficulty screen shown")  # デバッグ用出力
+
+        self.start_callback = start_callback
+
+        tk.Label(
+            self,
+            text="Select Difficulty",
+            font=("Arial", 40, "bold"),
+            fg="gold",
+            bg="#A0522D"
+        ).pack(pady=100)
+
+        # 難易度ボタン
+        difficulties = [
+            ("EASY", 8, 4),
+            ("NORMAL", 12, 5),
+            ("HARD", 16, 6)
+        ]
+
+        for name, cards, correct in difficulties:
+            tk.Button(
+                self,
+                text=f"{name}\n({cards} cards, {correct} correct)",
+                font=("Arial", 20, "bold"),
+                bg="#FFD700",
+                fg="black",
+                height=2,
+                width=20,
+                command=lambda c=cards, cor=correct: self.select_difficulty(c, cor)
+            ).pack(pady=20)
+
+    def select_difficulty(self, number_of_cards, number_of_correct):
+        print(f"Selected difficulty: {number_of_cards} cards, {number_of_correct} correct")  # デバッグ用出力
+        self.start_callback(number_of_cards, number_of_correct)
+
 class HitAndBlowGUI(tk.Frame):
-    def __init__(self, master, back_callback):
+    def __init__(self, master, back_callback, number_of_cards, number_of_correct):
         super().__init__(master, bg="#A0522D")
         self.pack(fill="both", expand=True)
 
@@ -73,43 +116,58 @@ class HitAndBlowGUI(tk.Frame):
         self.master.geometry(self.master.winfo_geometry())
         self.master.configure(bg="#A0522D")
 
-        self.number_of_cards = 8 # 手札の枚数
-        self.number_of_correct = 4 # 正解の枚数
+        self.number_of_cards = number_of_cards # 手札の枚数
+        self.number_of_correct = number_of_correct # 正解の枚数
 
-        # 正解をランダム生成（重複なし・4桁）
+        # 正解をランダム生成（重複なし・number_of_correct桁）
         self.answer = self.generate_answer()
         self.game_manager = GameManager(self.answer)
 
+        # キャンバスの幅を計算
+        half = self.number_of_cards // 2
+        max_x_hand = 280 + (half - 1) * 150 + 200 if half > 0 else 480
+        max_x_select = 280 + (self.number_of_correct - 1) * 150 + 200 if self.number_of_correct > 0 else 480
+        self.canvas_width = max(1000, max_x_hand, max_x_select)
+        self.canvas_height = 800
+
         # キャンバス
-        self.cvs = tk.Canvas(self, width=1000, height=800, bg="#007400")
+        self.cvs = tk.Canvas(self, width=self.canvas_width, height=self.canvas_height, bg="#007400")
         self.cvs.pack()
+
+        self.select_area_start_x = (self.canvas_width - (self.number_of_correct * 150)) // 2 + 75
+        self.cards_per_row = self.number_of_cards // 2
+        self.start_x = (self.canvas_width - (self.cards_per_row * 150)) // 2 + 75
+
+        # 中心線
+        self.cvs.create_line(self.canvas_width//2, 0, self.canvas_width//2, self.canvas_height, fill="white", dash=(4, 2))
 
         # 手札となるカードをランダムにn枚決定
         card_numbers = self.game_manager.deal_cards(self.number_of_cards)
         print("Card numbers:", card_numbers)  # Debug print
         
         # 選択されたカードのリスト (固定サイズ)
-        self.select_cards = [None] * 4
+        self.select_cards = [None] * self.number_of_correct
 
         # 選択中のカードが置かれるスペース
         # number_of_correct枚分のカードフレームを表示
+        # 中心に合わせる
         self.card_frames = []
+        y_frame = 150
         for i in range(self.number_of_correct):
-            x = 280 + i * 150
-            y = 160
-            card_frame = CardFrameSprite(self.cvs, x, y)
-            self.card_frames.append(card_frame)
+            x_frame = self.select_area_start_x + i * 150
+            frame = CardFrameSprite(self.cvs, x_frame, y_frame)
+            self.card_frames.append(frame)
 
-        # カード8枚表示
-        # 2段表示
+        # カード 8or12or16枚表示, 2段表示
+        # 中心に合わせる
         self.cards = []
-        for i in range(self.number_of_cards):
-            half = self.number_of_cards // 2
-            x = 280 + (i % half) * 150
-            y = 400 + (i // half) * 200
-            charatext = card_numbers[i]
-            card = CardSprite(self.cvs, x, y, charatext)
-            self.cards.append(card)
+        for i, card_number in enumerate(card_numbers):
+            row = i // self.cards_per_row
+            col = i % self.cards_per_row
+            x_card = self.start_x + col * 150
+            y_card = 400 + row * 200
+            card_sprite = CardSprite(self.cvs, x_card, y_card, card_number)
+            self.cards.append(card_sprite)
         
         # 正解カードを手札中からランダムに選択
         self.correct_cards = random.sample(self.cards, self.number_of_correct)
@@ -203,22 +261,22 @@ class HitAndBlowGUI(tk.Frame):
                 print(f"Card {card.get_charatext()} clicked") # デバッグ用出力
                 if card.is_selected():
                     # 非選択: スロットをNoneにする
-                    for i in range(4):
+                    for i in range(self.number_of_correct):
                         if self.select_cards[i] == card:
                             self.select_cards[i] = None
                             card.deselected()
                             break
                 else:
                     # 選択: 空いているスロットを探す
-                    for i in range(4):
+                    for i in range(self.number_of_correct):
                         if self.select_cards[i] is None:
                             self.select_cards[i] = card
-                            card.selected(i)
+                            card.selected(i, self.select_area_start_x)
                             break
 
     def generate_answer(self) -> str:
         digits = []
-        while len(digits) < 4:
+        while len(digits) < self.number_of_correct:
             d = random.randint(0, 9)
             if d not in digits:
                 digits.append(d)
@@ -226,17 +284,17 @@ class HitAndBlowGUI(tk.Frame):
 
     def validate_guess(self, guess: str) -> bool:
         return (
-            len(guess) == 4 and
+            len(guess) == self.number_of_correct and
             guess.isdigit() and
-            len(set(guess)) == 4
+            len(set(guess)) == self.number_of_correct
         )
 
     def make_guess(self):
         print("Making guess...")  # デバッグ用出力
         selected_count = sum(1 for c in self.select_cards if c is not None)
         print(f"Selected cards count: {selected_count}")  # デバッグ用出力
-        if selected_count != 4:
-            messagebox.showerror("選択エラー", "4枚のカードを選択してください")
+        if selected_count != self.number_of_correct:
+            messagebox.showerror("選択エラー", f"{self.number_of_correct}枚のカードを選択してください")
             return
 
         self.game_manager.make_guess(self.select_cards, self.correct_cards)
@@ -246,7 +304,7 @@ class HitAndBlowGUI(tk.Frame):
         self.label_hit.config(text=f"Hit: {hit}")
         self.label_blow.config(text=f"Blow: {blow}")
 
-        if hit == 4:
+        if hit == self.number_of_correct:
             messagebox.showinfo("クリア", "おめでとうございます！正解です！")
             self.master.quit()
 
