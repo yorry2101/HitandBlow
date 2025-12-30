@@ -3,8 +3,8 @@ import random
 from parent_judge import ParentJudge
 from game_round import GameRound
 class GameManager:
-    def __init__(self, answer: str):
-        self.round = GameRound(answer)
+    def __init__(self):
+        self.round = GameRound()
         
         # 0~9と十二支のカードを準備
         self.cards_digits = [str(i) for i in range(10)]

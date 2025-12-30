@@ -1,7 +1,6 @@
 # 1回分の勝負管理
 class GameRound:
-    def __init__(self, answer: str):
-        self.answer = answer
+    def __init__(self):
         self.attempts = []
 
     def add_attempt(self, guess: str, hit: int, blow: int):

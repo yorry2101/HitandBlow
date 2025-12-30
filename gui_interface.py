@@ -161,9 +161,7 @@ class HitAndBlowGUI(tk.Frame):
         self.number_of_cards = number_of_cards # 手札の枚数
         self.number_of_correct = number_of_correct # 正解の枚数
 
-        # 正解をランダム生成（重複なし・number_of_correct桁）
-        self.answer = self.generate_answer()
-        self.game_manager = GameManager(self.answer)
+        self.game_manager = GameManager()
 
         # キャンバスの幅を計算
         half = self.number_of_cards // 2
@@ -308,21 +306,6 @@ class HitAndBlowGUI(tk.Frame):
                             self.select_cards[i] = card
                             card.selected(i, self.select_area_start_x, self.y_frame)
                             break
-
-    def generate_answer(self) -> str:
-        digits = []
-        while len(digits) < self.number_of_correct:
-            d = random.randint(0, 9)
-            if d not in digits:
-                digits.append(d)
-        return "".join(str(d) for d in digits)
-
-    def validate_guess(self, guess: str) -> bool:
-        return (
-            len(guess) == self.number_of_correct and
-            guess.isdigit() and
-            len(set(guess)) == self.number_of_correct
-        )
 
     def make_guess(self):
         print("Making guess...")  # デバッグ用出力
