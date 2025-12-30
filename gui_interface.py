@@ -129,7 +129,7 @@ class DifficultyScreen(tk.Frame):
         self.button_return = tk.Button(
             self,
             text="Return",
-            font=("Arial", 16, "bold"),
+            font=("Arial", 24, "bold"),
             bg="gray",
             fg="white",
             command=self.return_to_start_screen
@@ -246,7 +246,7 @@ class HitAndBlowGUI(tk.Frame):
         # 説明
         self.label_info = tk.Label(self,
             text="Select cards and press JUDGE!",
-            font=("Arial", 30),
+            font=("Arial", 28),
             fg="beige",
             bg="#A0522D"
         )
@@ -255,7 +255,7 @@ class HitAndBlowGUI(tk.Frame):
         # 判定ボタン
         self.button_guess = tk.Button(self,
             text="JUDGE!",
-            font=("Arial", 14, "bold"),
+            font=("Arial", 30, "bold"),
             bg="#FF6347",
             fg="white",
             activebackground="#FF4500",
@@ -268,7 +268,7 @@ class HitAndBlowGUI(tk.Frame):
         self.button_quit = tk.Button(
             self,
             text="Quit",
-            font=("Arial", 16, "bold"),
+            font=("Arial", 24, "bold"),
             bg="gray",
             fg="white",
             command=self.quit_game
